@@ -1,0 +1,124 @@
+void Check_in()		//CHECK IN OF A CUSTOMER
+{
+	if(h.nroom==0)
+	{
+		cout<<"Please add rooms."<<endl;
+		return;
+	}
+	int i, rno;
+	if(h.ncust<=h.nroom){	//CHECKING CONDITION IF HOTEL HAS EMPTY ROOMS
+		c[h.ncust].booking_id=h.ncust+1;	//ALLOTING CUSTOMER ID TO THE CUSTOMER
+		flag:
+		int flag1=0;
+		cout<<"Enter room number=";		//ASKING WHAT ROOM NUMBER CUSTOMER WANTS TO STAY IN
+		cin>>rno;
+		for(i=0;i<h.nroom; i++){
+			if(rno==r[i].roomNumber)
+			{
+				flag1=1;
+				break;
+			}
+		}
+		if(flag1==0){
+			cout<<"Invalid room number. Please Enter again.\n";
+			goto flag;
+		}
+		if(r[i].status==0)		//CHECKING IF ROOM IS UNOCCUPIED
+		{
+			char ch2;
+			cout<<"Room available."<<endl;
+			displayRoom();
+			cout<<"Do you wish to continue? Press(Y/y)";		//CONFIRMATION
+			cin>>ch2;
+			if(ch2=='Y'||ch2=='y')
+			{
+				acceptCust();		//ACCEPTING CUSTOMER DETAILS
+				cout<<"Enter number of days of stay: ";
+				cin>>c[h.ncust].days;
+				c[h.ncust].bill = c[h.ncust].days*r[i].rent;		//generating bill. bill= No. of days * rent per day.
+				cout<<"Your total bill will approx be Rs."<<(c[h.ncust].bill)<<"."<<endl<<". Min adv payment="<<c[h.ncust].bill/4<<"What will you be paying?";
+				cin>>c[h.ncust].payment_advance;
+				while(c[h.ncust].payment_advance<c[h.ncust].bill/4||c[h.ncust].payment_advance>c[h.ncust].bill)
+				{
+					cout<<"Enter valid amount.";
+					cin>>c[h.ncust].payment_advance;
+				}
+				cout<<"Thank you. Booking confirmed."<<endl;		//confirmed booking
+				cout<<"--------------------------------------------------------------"<<endl;		//printing booking details
+				cout<<"Booking Id: "<<c[h.ncust].booking_id<<"\nName: "<<c[h.ncust].name<<"\nRoom no.: "<<rno<<"\nDate: ";
+				time_t my_time = time(NULL);
+						// ctime() used to give the present time
+				cout<<"%s"<<ctime(&my_time);
+				r[i].status=1;		//changing room status to booked
+				c[h.ncust].room=rno;		//alloting room to customer
+				c[h.ncust].status=1;
+				h.ncust++;
+			}
+			else		//if needs to change room number
+			{
+				goto flag;
+			}
+		}
+		else		//if room is occupied
+		{
+			cout<<"Room Occupied. Please choose another room."<<endl;
+		}
+	}
+	else		//CONDITION ALL ROOMS ARE BOOKED
+	{
+		cout<<"Sorry! Hotel is Full."<<endl;
+	}
+}
+
+void Check_out()		//CHECKING OUT
+{
+	int rno, i, j;
+	cout<<"Enter room number= ";
+	cin>>rno;
+	for(j=0;j<h.nroom; j++){
+		if(rno==r[j].roomNumber)
+		{
+			break;
+		}
+	}
+	if(r[j].status==0)		//IF ROOM NOT FOUND OCCUPIED
+	{
+		cout<<"Invalid."<<endl;
+	}
+	for(i=0;i<h.ncust;i++)	//CHECKING CUSTOMER DETAILS
+	{
+		if(c[i].room==rno)
+		{
+			cout<<"CHECKING OUT."<<endl;
+			displayCust();		//CUSTOMER DETAILS
+			cout<<"Your total bill is "<<c[i].bill<<endl;
+			cout<<"Adv payment: "<<c[i].payment_advance;
+			cout<<endl<<"Hence, pending payment= Rs."<<c[i].bill-c[i].payment_advance;		//PENDING PAYMENTS
+			cout<<endl<<"Thank you! Visit Again :)"<<endl;
+			r[j].status=0;	//CHANGING STATUS OF ROOM TO UNOCCUPIED
+			c[i].status=0;	//CHECKED OUT
+			break;
+		}
+	}
+}
+void Summary()		//PRINTING LIST OF ALL CUSTOMERS
+{
+	if(h.nroom==0)
+	{
+		cout<<"No customers as yet."<<endl;
+		return;
+	}
+	cout<<"Guest Summary:"<<endl;
+	cout<<"Id.\t\t";
+	cout<<"|	Name	\t\t";
+	cout<<"|	Phone	\t\t";
+	cout<<"|	Address	\t\t";
+	cout<<"|	Room no	: \t";
+	cout<<"|	Status	\t\t|"<<endl;
+	for(int i=0;i<h.ncust;i++)
+	{
+		displayCust();
+	}
+}
+
+
